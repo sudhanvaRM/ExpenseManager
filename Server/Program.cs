@@ -11,6 +11,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+ // Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder
+            .WithOrigins("http://localhost:4200") // Frontend URL
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 // Build the application.
 var app = builder.Build();
 
@@ -27,6 +37,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
+app.UseCors("AllowFrontend");  
 // Map Razor Pages.
 app.MapRazorPages();
 

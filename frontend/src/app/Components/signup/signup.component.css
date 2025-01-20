@@ -1,5 +1,5 @@
-/* Container for the entire login form */
-.login-container {
+/* Container for the entire sign-up form */
+.signup-container {
   max-width: 400px;
   margin: 50px auto;
   padding: 30px;
@@ -9,7 +9,7 @@
 }
 
 /* Header style */
-.login-container h2 {
+.signup-container h2 {
   text-align: center;
   color: #333;
   font-size: 24px;
@@ -18,15 +18,15 @@
 }
 
 /* Styling for the form fields */
-.login-container label {
+.signup-container label {
   font-size: 14px;
   color: #555;
   display: block;
   margin-bottom: 6px;
 }
 
-.login-container input[type="text"], 
-.login-container input[type="password"] {
+.signup-container input[type="text"], 
+.signup-container input[type="password"] {
   width: 100%;
   padding: 12px;
   margin-bottom: 20px;
@@ -38,8 +38,8 @@
 }
 
 /* Focus effect for input fields */
-.login-container input[type="text"]:focus, 
-.login-container input[type="password"]:focus {
+.signup-container input[type="text"]:focus, 
+.signup-container input[type="password"]:focus {
   border-color: #007BFF;
   outline: none;
 }
@@ -52,10 +52,10 @@
 }
 
 /* Submit button styling */
-.login-container button {
+.signup-container button {
   width: 100%;
   padding: 12px;
-  background-color: #007BFF;
+  background-color: #28a745;
   color: white;
   font-size: 16px;
   border: none;
@@ -65,8 +65,8 @@
 }
 
 /* Hover effect on the button */
-.login-container button:hover {
-  background-color: #0056b3;
+.signup-container button:hover {
+  background-color: #218838;
 }
 
 /* Message text styling */
@@ -77,18 +77,18 @@
   margin-top: 20px;
 }
 
-/* Additional styling for the login container */
-.login-container .login-link {
+/* Additional styling for the sign-up container */
+.signup-container .login-link {
   text-align: center;
   margin-top: 20px;
 }
 
-.login-container .login-link a {
+.signup-container .login-link a {
   color: #007BFF;
   text-decoration: none;
   font-weight: bold;
 }
 
-.login-container .login-link a:hover {
+.signup-container .login-link a:hover {
   text-decoration: underline;
 }
