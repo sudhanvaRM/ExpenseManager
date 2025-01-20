@@ -1,0 +1,17 @@
+<!-- filepath: /c:/Users/26301/Desktop/ExpenseManager11/ExpenseManager/frontend/src/app/components/login/login.component.html -->
+<div class="login-container">
+    <h2>Login</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" [(ngModel)]="username" name="username" required>
+        <div *ngIf="usernameError" class="error">Username is required</div>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" [(ngModel)]="password" name="password" required>
+        <div *ngIf="passwordError" class="error">Password is required</div>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
