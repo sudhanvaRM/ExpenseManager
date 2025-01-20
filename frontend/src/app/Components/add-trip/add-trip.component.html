@@ -1,0 +1,11 @@
+<div class="add-trip-container">
+    <h2>Add New Trip</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <label for="tripName">Trip Name:</label>
+        <input type="text" id="tripName" [(ngModel)]="tripName" name="tripName" required>
+      </div>
+      <button type="submit">Add Trip</button>
+    </form>
+    <div *ngIf="message" class="message">{{ message }}</div>
+  </div>
