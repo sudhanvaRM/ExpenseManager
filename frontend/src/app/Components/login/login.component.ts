@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
+  imports: [FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -18,7 +17,7 @@ export class LoginComponent {
   passwordError: boolean = false;
   message: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit() {
     this.usernameError = !this.username;
@@ -30,14 +29,26 @@ export class LoginComponent {
         password: this.password
       };
 
-      this.http.post<{ message: string }>('http://localhost:5134/api/login', loginData)
+      this.http.post<{ message: string, user_id: string }>('http://localhost:5134/api/login', loginData)
         .subscribe(response => {
           this.message = response.message;
           console.log('Login successful', response);
+          localStorage.setItem('user_id', response.user_id);
+          localStorage.setItem('username', this.username);
+          localStorage.setItem('isLoggedIn', 'true');
+          this.router.navigate(['/home']);
         }, error => {
           this.message = error.error.message;
           console.error('Login failed', error);
         });
     }
+  }
+
+  close() {
+    this.router.navigate(['/home']);
+  }
+
+  navigateToSignup(){
+    this.router.navigate(['/home/signup']);
   }
 }

@@ -22,6 +22,81 @@ namespace Server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Server.Models.Entities.Debt", b =>
+                {
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("trip_id")
+                        .HasColumnOrder(0);
+
+                    b.Property<Guid>("DebtorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("debtor_id")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("CreditorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creditor_id")
+                        .HasColumnOrder(2);
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<bool>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("status");
+
+                    b.HasKey("TripId", "DebtorId", "CreditorId");
+
+                    b.HasIndex("CreditorId");
+
+                    b.HasIndex("DebtorId");
+
+                    b.ToTable("debt", (string)null);
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Expense", b =>
+                {
+                    b.Property<Guid>("ExpenseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("expense_id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("category");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("comment");
+
+                    b.Property<Guid>("PaidUser")
+                        .HasColumnType("uuid")
+                        .HasColumnName("paid_user");
+
+                    b.Property<Guid?>("TripId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("trip_id");
+
+                    b.HasKey("ExpenseId");
+
+                    b.HasIndex("PaidUser");
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("expense", (string)null);
+                });
+
             modelBuilder.Entity("Server.Models.Entities.Trip", b =>
                 {
                     b.Property<Guid>("TripId")
@@ -43,6 +118,23 @@ namespace Server.Migrations
                     b.HasKey("TripId");
 
                     b.ToTable("trip", (string)null);
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Trip_Participants", b =>
+                {
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("trip_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("TripId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("trip_participants", (string)null);
                 });
 
             modelBuilder.Entity("Server.Models.Entities.Users", b =>
@@ -67,6 +159,90 @@ namespace Server.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Debt", b =>
+                {
+                    b.HasOne("Server.Models.Entities.Users", "Creditor")
+                        .WithMany("DebtsAsCreditor")
+                        .HasForeignKey("CreditorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Entities.Users", "Debtor")
+                        .WithMany("DebtsAsDebtor")
+                        .HasForeignKey("DebtorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Entities.Trip", "Trip")
+                        .WithMany("Debts")
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creditor");
+
+                    b.Navigation("Debtor");
+
+                    b.Navigation("Trip");
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Expense", b =>
+                {
+                    b.HasOne("Server.Models.Entities.Users", "PaidUserNavigation")
+                        .WithMany("Expenses")
+                        .HasForeignKey("PaidUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Entities.Trip", "Trip")
+                        .WithMany("Expenses")
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("PaidUserNavigation");
+
+                    b.Navigation("Trip");
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Trip_Participants", b =>
+                {
+                    b.HasOne("Server.Models.Entities.Trip", "Trip")
+                        .WithMany("TripParticipants")
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Entities.Users", "User")
+                        .WithMany("TripParticipants")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trip");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Trip", b =>
+                {
+                    b.Navigation("Debts");
+
+                    b.Navigation("Expenses");
+
+                    b.Navigation("TripParticipants");
+                });
+
+            modelBuilder.Entity("Server.Models.Entities.Users", b =>
+                {
+                    b.Navigation("DebtsAsCreditor");
+
+                    b.Navigation("DebtsAsDebtor");
+
+                    b.Navigation("Expenses");
+
+                    b.Navigation("TripParticipants");
                 });
 #pragma warning restore 612, 618
         }

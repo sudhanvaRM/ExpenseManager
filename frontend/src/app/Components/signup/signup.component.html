@@ -1,5 +1,6 @@
 <div class="signup-container">
-  <h2>Sign Up</h2>
+  <button class="close-btn" (click)="close()">×</button>
+  <h2>Signup</h2>
   <form (ngSubmit)="onSubmit()">
     <div>
       <label for="username">Username:</label>
@@ -16,7 +17,10 @@
       <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" required>
       <div *ngIf="confirmPasswordError" class="error">Passwords do not match</div>
     </div>
-    <button type="submit">Sign Up</button>
+    <button type="submit">Signup</button>
   </form>
   <div *ngIf="message" class="message">{{ message }}</div>
+  <div class="login-link">
+    <a (click)="navigateToLogin()">Already Have an Account? Login</a>
+  </div>
 </div>

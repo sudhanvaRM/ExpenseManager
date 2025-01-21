@@ -2,10 +2,12 @@
 .login-container {
   max-width: 400px;
   margin: 50px auto;
-  padding: 30px;
+  padding: 30px 30px 30px 30px;  /* Adjust padding if necessary */
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* Allow positioning of the close button */
+  padding-top: 50px; /* Add padding top to accommodate the close button */
 }
 
 /* Header style */
@@ -90,5 +92,45 @@
 }
 
 .login-container .login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Close Button Styling */
+.close-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  font-size: 18px;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+/* Hover effect for close button */
+.close-btn:hover {
+  background-color: darkred;
+}
+
+.signup-link {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.signup-link a {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.signup-link a:hover {
   text-decoration: underline;
 }

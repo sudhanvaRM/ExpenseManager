@@ -15,5 +15,12 @@ namespace Server.Models.Entities
         [Required]
         [StringLength(255)]
         public string Password { get; set; }
+
+        public ICollection<Trip_Participants> TripParticipants { get; set; }
+
+        public ICollection<Expense> Expenses { get; set; }
+
+        public virtual ICollection<Debt> DebtsAsDebtor { get; set; }
+        public virtual ICollection<Debt> DebtsAsCreditor { get; set; }
     }
 }

@@ -18,22 +18,26 @@ export class AddTripComponent {
   constructor(private http: HttpClient) {}
 
   onSubmit() {
-    if (!this.tripName) {
-      this.message = 'Trip name is required';
+    const userId = localStorage.getItem('user_id');
+    if (!this.tripName || !userId) {
+      this.message = 'Trip name and user ID are required';
       return;
     }
 
     const tripData = {
-      tripName: this.tripName
+      tripName: this.tripName,
+      userId: userId
     };
 
-    this.http.post<{ message: string }>('http://localhost:5134/api/trip/add-trip', tripData)
+    this.http.post<{ message: string, tripId: string }>('http://localhost:5134/api/trip/add-trip', tripData)
       .subscribe(response => {
         this.message = response.message;
-        console.log(response);
+        console.log('Trip created successfully', response);
+        // Optionally, redirect to another page
+        // window.location.href = '/home';
       }, error => {
         this.message = error.error.message;
-        console.error(error);
+        console.error('Failed to create trip', error);
       });
   }
 }

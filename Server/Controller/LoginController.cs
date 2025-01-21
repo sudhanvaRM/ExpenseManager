@@ -28,7 +28,7 @@ namespace Server.Controllers
 
             var user = await _context.Users
                 .Where(u => u.Username == loginRequest.Username)
-                .Select(u => new { u.Username, u.Password })
+                .Select(u => new { u.Username, u.Password, u.UserId })
                 .FirstOrDefaultAsync();
 
 
@@ -45,7 +45,7 @@ namespace Server.Controllers
 
             // Console.WriteLine($"Login successful for username: {loginRequest.Username}");
             // Here you can generate and return a JWT token or any other authentication token
-            return Ok(new {message = "Login successful"});
+            return Ok(new {message = "Login successful", user_id = user.UserId});
         }
     }
 }

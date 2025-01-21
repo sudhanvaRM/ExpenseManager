@@ -1,11 +1,13 @@
 using Server.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Register the Razor Pages service.
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 
 // Register the DbContext service before `app.Build()`.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -20,6 +22,8 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
+
+builder.Services.AddScoped<UpdateTripStatus>();
 
 // Build the application.
 var app = builder.Build();

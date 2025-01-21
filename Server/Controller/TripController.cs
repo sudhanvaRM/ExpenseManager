@@ -21,21 +21,50 @@ namespace Server.Controllers
         }
 
         [HttpPost("add-trip")]
-        public async Task<IActionResult> CreateTrip([FromBody] Trip trip)
+        public async Task<IActionResult> CreateTrip([FromBody] TripData tripData)
         {
-            if (string.IsNullOrEmpty(trip.TripName))
+            if (string.IsNullOrEmpty(tripData.TripName))
             {
                 return BadRequest(new { message = "Trip name is required." });
             }
 
-            trip.TripId = Guid.NewGuid();
-            trip.TripDate = DateTime.UtcNow; // Set the trip date to the current date and time
+            var trip = new Trip
+            {
+                TripId = Guid.NewGuid(),
+                TripName = tripData.TripName,
+                TripDate = DateTime.UtcNow // Set the trip date to the current date and time
+            };
 
             _context.Trips.Add(trip);
+
+            var tripParticipant = new Trip_Participants
+            {
+                TripId = trip.TripId,
+                UserId = tripData.UserId
+            };
+
+            _context.TripParticipants.Add(tripParticipant);
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Trip created successfully" });
+            return Ok(new { message = "Trip created successfully", tripId = trip.TripId });
         }
+
+         [HttpGet("user-trips/{userId}")]
+         public async Task<IActionResult> GetUserTrips(Guid userId)
+         {
+            var trips = await _context.TripParticipants
+                .Where(tp => tp.UserId == userId)
+                .Select(tp => new { tp.Trip.TripId, tp.Trip.TripName })
+                .ToListAsync();
+
+            if (trips == null || trips.Count == 0)
+            {
+                return NotFound(new { message = "No trips found for the user." });
+            }
+
+            return Ok(trips);
+         }
 
         // [HttpGet]
         // public async Task<ActionResult<IEnumerable<Trip>>> GetAllTrips()

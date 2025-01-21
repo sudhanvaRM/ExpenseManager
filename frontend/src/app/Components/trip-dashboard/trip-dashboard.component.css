@@ -1,0 +1,96 @@
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  
+  /* Container for the dashboard */
+  .dashboard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  /* Heading styling */
+  .dashboard-container h2 {
+    font-size: 1.8rem;
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  
+  /* Message styling */
+  .message {
+    font-size: 1rem;
+    color: #007bff;
+    background: #e9f7fe;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* No trips message styling */
+  .dashboard-container div {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Trip card styling */
+  .trip-card {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Trip title */
+  .trip-card h3 {
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+    color: #333;
+  }
+  
+  /* Button styling */
+  .trip-card button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .trip-card button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 600px) {
+    .dashboard-container {
+      padding: 15px;
+    }
+  
+    .trip-card button {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+  
+    .dashboard-container h2 {
+      font-size: 1.5rem;
+    }
+  }
+   

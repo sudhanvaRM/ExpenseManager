@@ -1,0 +1,10 @@
+<div class="dashboard-container">
+    <h2>My Trips</h2>
+    <div *ngIf="message" class="message">{{ message }}</div>
+    <div *ngIf="trips.length === 0 && !message">No trips found.</div>
+    <div *ngFor="let trip of trips" class="trip-card">
+      <h3>{{ trip.tripName }}</h3>
+      <button (click)="addExpense(trip.tripId)">Add Expense</button>
+      <button (click)="addParticipant(trip.tripId)">Add Participant</button>
+    </div>
+  </div>

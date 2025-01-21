@@ -44,7 +44,7 @@ namespace Server.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Signup successful" });
+            return Ok(new { message = "Signup successful", user_id = newUser.UserId });
         }
     }
 

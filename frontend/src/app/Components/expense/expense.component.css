@@ -1,0 +1,21 @@
+.expense-container {
+    padding: 20px;
+  }
+  
+  button[mat-fab] {
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .mat-header-cell {
+    font-weight: bold;
+  }
+  
+  .mat-icon-button {
+    margin-right: 5px;
+  }
+  
