@@ -1,1 +1,67 @@
-<p>add-expense works!</p>
+<div class="container">
+    <h2>Add Expense</h2>
+    <form (ngSubmit)="onSubmit()" #addExpenseForm="ngForm">
+      <!-- Trip selection dropdown -->
+      <div class="form-group">
+        <label for="trip">Select Trip</label>
+        <select
+          id="trip"
+          [(ngModel)]="expense.TripId"
+          name="trip"
+          required
+          class="form-control"
+        >
+          <option *ngFor="let trip of tripList" [value]="trip.id">
+            {{ trip.name }}
+          </option>
+        </select>
+      </div>
+  
+      <!-- Amount input -->
+      <div class="form-group">
+        <label for="amount">Amount</label>
+        <input
+          type="number"
+          id="amount"
+          [(ngModel)]="expense.Amount"
+          name="amount"
+          required
+          min="0"
+          class="form-control"
+          placeholder="Enter Amount"
+        />
+      </div>
+  
+      <!-- Comment input -->
+      <div class="form-group">
+        <label for="comment">Comment</label>
+        <textarea
+          id="comment"
+          [(ngModel)]="expense.Comment"
+          name="comment"
+          required
+          class="form-control"
+          placeholder="Enter a brief comment"
+        ></textarea>
+      </div>
+  
+      <!-- Category dropdown -->
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select
+          id="category"
+          [(ngModel)]="expense.Category"
+          name="category"
+          required
+          class="form-control"
+        >
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </option>
+        </select>
+      </div>
+  
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>

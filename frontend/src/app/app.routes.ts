@@ -3,6 +3,7 @@ import { HomeComponent } from './Components/home/home.component';
 import { LoginComponent } from './Components/login/login.component';
 import { SignupComponent } from './Components/signup/signup.component';
 import { AddTripComponent } from './Components/add-trip/add-trip.component';
+import { AddExpenseComponent } from './Components/add-expense/add-expense.component';
 
 export const routes: Routes = [
   {
@@ -10,7 +11,8 @@ export const routes: Routes = [
     component: HomeComponent,
     children: [
       { path: 'login', component: LoginComponent },
-      { path: 'signup', component: SignupComponent }
+      { path: 'signup', component: SignupComponent },
+      { path: 'add-expense', component: AddExpenseComponent }
       // { path: 'add-trip', component: AddTripComponent }
     ]
   },

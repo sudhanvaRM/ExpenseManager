@@ -3,6 +3,9 @@ using Server.Models.Entities;
 using Server.Services;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Server.Models.Data;
 
 namespace Server.Controllers
 {
@@ -20,18 +23,127 @@ namespace Server.Controllers
 
         }
 
-        // Existing methods...
-
-        [HttpGet("update-trip-status")]
-        public async Task<IActionResult> GetTripStatus(Guid tripId)
+        [HttpPost("add-person-to-trip")]
+        public async Task<IActionResult> AddPersonToTrip(AddTrip addTrip)
         {
-            List<UserExpense> userExpenses = await _tripStatus.FetchUserExpenseAsync(tripId);
-            //  List<Debt> debts = await _tripStatus.SettleExpensesAsync(tripId, userExpenses);
-            
-            // You can now return the result or perform any other operations
-            // return Ok(userExpenses); // Example: returning the list of user expenses as JSON
-            return Ok(userExpenses);
+            Console.WriteLine("Trip Id",addTrip.TripId);
+            // Check if the trip exists
+            var trip = await _context.Trips.FindAsync(addTrip.TripId);
+            Console.WriteLine("Trip Details",trip);
+            if (trip == null)
+            {
+                return NotFound(new { message = "Trip not found." });
+            }
+
+            // Add the user to the trip
+            Trip_Participants tripParticipant = new Trip_Participants
+            {
+                TripId =   addTrip.TripId,
+                UserId = addTrip.UserId
+            };
+
+            _context.TripParticipants.Add(tripParticipant);
+            await _context.SaveChangesAsync();
+            List<UserExpense> userExpenses = await _tripStatus.FetchUserExpenseAsync(tripParticipant.TripId);
+            List<Debt> debts = await _tripStatus.SettleExpensesAsync(tripParticipant.TripId, userExpenses);
+
+            return Ok(new { message = "User added to trip successfully." });
         }
+
+        [HttpPost("add-expense")]   
+        // Add the expense to the database
+        public async Task<IActionResult> AddExpense([FromBody] AddExpense expenseDto)
+        {
+            if (expenseDto == null)
+            {
+                return BadRequest("Expense data is required.");
+            }
+
+            // Start a database transaction
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Generate ExpenseId on the server
+                var expense = new Expense
+                {
+                    ExpenseId = Guid.NewGuid(),
+                    TripId = expenseDto.TripId,
+                    PaidUser = expenseDto.PaidUser,
+                    Amount = expenseDto.Amount,
+                    Comment = expenseDto.Comment,
+                    Category = expenseDto.Category
+                };
+
+                if (expense.TripId.HasValue)
+                {
+                    // Fetch the trip participant record
+                    var tripParticipant = await _context.TripParticipants
+                        .FirstOrDefaultAsync(tp => tp.TripId == expense.TripId.Value && tp.UserId == expense.PaidUser);
+
+                    // Check if the user is not part of the trip
+                    if (tripParticipant == null)
+                    {
+                        return NotFound($"Invalid Trip Details or User is not part of this trip.");
+                    }
+                }
+
+                // Validate PaidUser exists
+                var userExists = await _context.Users.FindAsync(expense.PaidUser);
+                if (userExists == null)
+                {
+                    return NotFound($"Invalid User Details");
+                }
+
+                // Add the expense
+                await _context.Expenses.AddAsync(expense);
+                await _context.SaveChangesAsync();
+
+                // Additional processing for TripId
+                if (expense.TripId.HasValue)
+                {
+                    List<UserExpense> userExpenses = await _tripStatus.FetchUserExpenseAsync(expense.TripId.Value);
+
+                    var debtExisting = await _context.Debts
+                              .Where(d => d.TripId == expense.TripId)
+                              .ToListAsync();
+
+                     // Remove the debts from the context
+                    _context.Debts.RemoveRange(debtExisting);
+
+                       // Save changes to the database
+                     await _context.SaveChangesAsync();   
+
+                    //Add New Debt Status     
+                    List<Debt> debts = await _tripStatus.SettleExpensesAsync(expense.TripId.Value, userExpenses);
+
+                    // If needed, save any changes resulting from debt settlement
+                    await _context.SaveChangesAsync();
+                }
+
+                // Commit the transaction
+                await transaction.CommitAsync();
+
+                return Ok(new { Message = "Expense added successfully", ExpenseId = expense.ExpenseId });
+            }
+            catch (Exception ex)
+            {
+                // Roll back the transaction on any failure
+                await transaction.RollbackAsync();
+
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // [HttpPost("pay-due")]
+        // {
+
+        // }
+
+        // [HttpGet("get-dues")]
+        // {
+
+        // }
 
     }
 }

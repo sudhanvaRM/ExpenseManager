@@ -36,7 +36,7 @@ export class LoginComponent {
           localStorage.setItem('user_id', response.user_id);
           localStorage.setItem('username', this.username);
           localStorage.setItem('isLoggedIn', 'true');
-          this.router.navigate(['/home']);
+         this.router.navigate(['/home']);
         }, error => {
           this.message = error.error.message;
           console.error('Login failed', error);
