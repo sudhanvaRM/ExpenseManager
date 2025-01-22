@@ -135,6 +135,46 @@ namespace Server.Controllers
             }
         }
 
+        [HttpGet("user-expenses/{userId}")]  
+        public async Task<IActionResult> GetUserExpenses(Guid userId)
+        {
+            var expenses = await _context.Expenses
+                .Where(e => e.PaidUser == userId)
+                .Select(e => new 
+                {
+                    ExpenseId = e.ExpenseId,
+                    Amount = e.Amount,
+                    Comment = e.Comment,
+                    Category = e.Category,
+                    TripName = e.TripId.HasValue ? e.Trip.TripName : "Unassigned",
+                    TripId = e.TripId
+                })
+                .ToListAsync();
+
+            if (expenses == null || expenses.Count == 0)
+            {
+                return NotFound(new { message = "No expenses found for the user." });
+            }
+
+            return Ok(expenses);
+        }
+
+        [HttpPost("assign-trip")]
+        public async Task<IActionResult> AssignTrip([FromBody] AssignTripRequest request)
+        {
+            var expense = await _context.Expenses.FindAsync(request.ExpenseId);
+            if (expense == null)
+            {
+                return NotFound("Expense not found.");
+            }
+
+            // Update the TripId of the expense
+            expense.TripId = request.TripId;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Expense assigned to trip successfully." });
+        }
+
         // [HttpPost("pay-due")]
         // {
 

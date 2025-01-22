@@ -1,66 +1,71 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Import FormsModule for template-driven forms
-import { HttpClient, HttpClientModule } from '@angular/common/http'; // Import HttpClient for HTTP requests
-import { CommonModule } from '@angular/common'; // Import CommonModule for ngFor and ngIf
+import { FormsModule } from '@angular/forms'; // For template-driven forms
+import { HttpClient, HttpClientModule } from '@angular/common/http'; // For HTTP requests
+import { CommonModule } from '@angular/common'; // For ngFor and ngIf
 
 @Component({
   selector: 'app-add-expense',
   standalone: true,
-  imports: [FormsModule, HttpClientModule, CommonModule], // Ensure CommonModule is included
+  imports: [FormsModule, HttpClientModule, CommonModule],
   templateUrl: './add-expense.component.html',
-  styleUrls: ['./add-expense.component.css']
+  styleUrls: ['./add-expense.component.css'],
 })
 export class AddExpenseComponent implements OnInit {
   expense = {
-    TripId: null,
-    PaidUser: '',  // This will be populated from localStorage
+    TripId: null, // Allows null for unassigned expenses
+    PaidUser: '', // Set from localStorage
     Amount: null,
     Comment: '',
     Category: '',
   };
 
-  tripList: any[] = [];
-  categories: string[] = [];
+  tripList: any[] = []; // To hold trips fetched from the API
+  categories: string[] = []; // To hold categories
 
-  private apiUrl = 'http://localhost:5134/api/expense/add-expense'; // Replace with your API URL
+  private tripsApiUrl = 'http://localhost:5134/api/trip/trip-details'; // API for fetching trips
+  private addExpenseApiUrl = 'http://localhost:5134/api/expense/add-expense'; // API for adding expenses
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Fetch the PaidUser from localStorage and assign it
-    const userId = localStorage.getItem('user_id'); // Fetch from localStorage
+    // Fetch the PaidUser from localStorage
+    const userId = localStorage.getItem('user_id');
     if (userId) {
-      this.expense.PaidUser = userId; // Set PaidUser if a user_id exists in localStorage
+      this.expense.PaidUser = userId; // Assign the userId to the PaidUser field
+      this.loadTrips(userId); // Fetch trips for the user
+    } else {
+      alert('User ID not found. Please log in again.');
     }
 
-    // Load data for the dropdowns
-    this.loadTripData();
-    this.loadCategoryData();
+    this.loadCategories(); // Load predefined categories
   }
 
-  // Load dummy trip data
-  loadTripData(): void {
-    this.tripList = [
-      { id: '148b272f-7a26-45c2-9e33-c9ac99ba8b8d', name: 'Trip to Paris' },
-      { id: '341c1c4f-0b60-4b56-a741-cd3a703f8082', name: 'Weekend at the Beach' },
-      { id: '755b3cda-d591-4f3c-9d2c-f73cb51d4d39', name: 'Hiking in the Mountains' },
-    ];
-    console.log('Trip List:', this.tripList); // Debugging
+  // Fetch trips for the logged-in user
+  loadTrips(userId: string): void {
+    this.http.get(`${this.tripsApiUrl}/${userId}`).subscribe(
+      (response: any) => {
+        this.tripList = [{ tripId: null, tripName: 'Unassigned' }, ...response]; // Add "Unassigned" option
+        console.log('Fetched Trips:', this.tripList);
+      },
+      (error) => {
+        console.error('Error fetching trips:', error);
+        alert('Failed to fetch trips. Please try again later.');
+      }
+    );
   }
 
-  // Load dummy categories
-  loadCategoryData(): void {
+  // Load predefined categories
+  loadCategories(): void {
     this.categories = ['Food', 'Travel', 'Accommodation', 'Entertainment'];
-    console.log('Categories:', this.categories); // Debugging
   }
 
+  // Handle form submission
   onSubmit(): void {
-    console.log('Expense Data:', this.expense); // Debugging: Log the data inputted by the user
+    console.log('Submitting Expense:', this.expense);
 
-    // Check if any of the required fields are missing or empty
+    // Validate input fields
     if (
-      !this.expense.TripId ||
-      !this.expense.Amount ||
+      this.expense.Amount === null ||
       !this.expense.Comment.trim() ||
       !this.expense.Category.trim()
     ) {
@@ -68,8 +73,8 @@ export class AddExpenseComponent implements OnInit {
       return;
     }
 
-    // Proceed with the API request
-    this.http.post(this.apiUrl, this.expense).subscribe(
+    // Submit the expense to the API
+    this.http.post(this.addExpenseApiUrl, this.expense).subscribe(
       (response) => {
         console.log('Expense added successfully:', response);
         alert('Expense added successfully!');
@@ -82,10 +87,11 @@ export class AddExpenseComponent implements OnInit {
     );
   }
 
+  // Reset the form
   resetForm(): void {
     this.expense = {
-      TripId: null,
-      PaidUser: '', // Clear the PaidUser field when resetting the form
+      TripId: null, // Reset TripId to allow "Unassigned"
+      PaidUser: this.expense.PaidUser, // Retain the PaidUser field
       Amount: null,
       Comment: '',
       Category: '',

@@ -3,7 +3,10 @@
     <span class="logo-text">Expense Manager</span>
   </div>
   <!-- <button class="login-btn" [routerLink]="['/login']">Login</button> -->
-  <button class="login-btn" (click) = "handleLogin()"  >Login</button>
-  <!-- <button class = "login-btn" *ngIf="!isLoggedIn" (click)="handleLogin()">Login</button>
-  <button class = "login-btn" *ngIf="isLoggedIn" (click)="handleLogout()">Logout</button> -->
+   <div class = "button-container">
+    <button class="login-btn" (click) = "handleLogin()"  >Login</button>
+    <button class = login-btn (click)= "handleAddTrip()"> Add trip</button>
+    <button class="login-btn" (click)="handleAddExpense()"> Add Expense</button>
+    <button class="login-btn" (click)="handleViewExpenses()">My Expenses</button>
+   </div>
 </nav>

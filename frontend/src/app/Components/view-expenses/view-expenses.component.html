@@ -1,0 +1,38 @@
+<div class="container">
+    <h2>View Expenses</h2>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <!-- <th>Expense ID</th> -->
+          <th>Amount</th>
+          <th>Comment</th>
+          <th>Category</th>
+          <th>Trip Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let expense of expenses">
+          <td>{{ expense.amount }}</td>
+          <td>{{ expense.comment }}</td>
+          <td>{{ expense.category }}</td>
+          <td>{{ expense.tripName }}</td>
+          <td>
+            <button
+              *ngIf="expense.tripName === 'Unassigned'"
+              (click)="selectedTripId = selectedTripId ? null : expense.expenseId">
+              Assign to Trip
+            </button>
+  
+            <div *ngIf="selectedTripId === expense.expenseId">
+              <select [(ngModel)]="expense.tripId">
+                <option *ngFor="let trip of tripList" [value]="trip.tripId">{{ trip.tripName }}</option>
+              </select>
+              <button (click)="assignToTrip(expense.expenseId, expense.tripId)">Assign</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

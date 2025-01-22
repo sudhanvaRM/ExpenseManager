@@ -66,6 +66,46 @@ namespace Server.Controllers
             return Ok(trips);
          }
 
+         [HttpGet("trip-details/{userId}")]
+        public async Task<IActionResult> GetTripDetails(Guid userId)
+        {
+            var tripDetails = await _context.TripParticipants
+                .Where(tp => tp.UserId == userId)
+                .Select(tp => new { tp.Trip.TripId, tp.Trip.TripName })
+                .ToListAsync();
+
+            if (tripDetails == null || tripDetails.Count == 0)
+            {
+                return NotFound(new { message = "No trips found for the user." });
+            }
+
+            return Ok(tripDetails);
+        }
+
+            // [HttpGet("user-expenses/{userId}")]
+            // public async Task<IActionResult> GetUserExpenses(Guid userId)
+            // {
+            //     var expenses = await _context.Expenses
+            //         .Where(e => e.PaidUser == userId)
+            //         .Select(e => new 
+            //         {
+            //             ExpenseId = e.ExpenseId,
+            //             Amount = e.Amount,
+            //             Comment = e.Comment,
+            //             Category = e.Category,
+            //             TripName = e.TripId.HasValue ? e.Trip.TripName : "Unassigned"
+            //         })
+            //         .ToListAsync();
+
+            //     if (expenses == null || expenses.Count == 0)
+            //     {
+            //         return NotFound(new { message = "No expenses found for the user." });
+            //     }
+
+            //     return Ok(expenses);
+            // }
+
+
         // [HttpGet]
         // public async Task<ActionResult<IEnumerable<Trip>>> GetAllTrips()
         // {

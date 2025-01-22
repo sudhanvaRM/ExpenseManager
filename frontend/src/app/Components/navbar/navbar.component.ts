@@ -12,4 +12,17 @@ export class NavbarComponent {
   handleLogin(){
     this.router.navigate(['/home/login']);
   }
+
+  handleAddTrip(){
+    this.router.navigate(['/home/add-trip']);
+  }
+
+  handleAddExpense(){
+    this.router.navigate(['/home/add-expense']);
+  }
+
+  handleViewExpenses(){
+    this.router.navigate(['/home/view-expenses']);
+  }
+
 }
