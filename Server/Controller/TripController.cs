@@ -101,9 +101,10 @@ namespace Server.Controllers
 
             // Debts where the user is the debtor (owes money) for the specified trip
             var owesToOthers = await _context.Set<Debt>()
-                .Where(d => d.DebtorId == trip.UserId && d.TripId == trip.TripId)
+                .Where(d => d.DebtorId == trip.UserId && d.TripId == trip.TripId && d.Status == false)
                 .Select(d => new
-                {
+                {   
+                    TripId = d.TripId,
                     CreditorId = d.CreditorId,
                     CreditorUsername = d.Creditor.Username,
                     Amount = d.Amount
@@ -115,6 +116,7 @@ namespace Server.Controllers
                 .Where(d => d.CreditorId == trip.UserId && d.TripId == trip.TripId && d.Status == false)
                 .Select(d => new
                 {
+                    TripId = d.TripId,
                     DebtorId = d.DebtorId,
                     DebtorUsername = d.Debtor.Username,
                     Amount = d.Amount
@@ -128,73 +130,143 @@ namespace Server.Controllers
             });
         }
 
-        [HttpPost("SettleDebt")]
-public async Task<IActionResult> SettleTripDebt(Guid DebtId)
+//         [HttpPost("SettleDebt")]
+// public async Task<IActionResult> SettleTripDebt(Guid DebtId)
+// {
+
+    
+//     var debt = await _context.Debts.FindAsync(DebtId);
+
+//     if (debt == null)
+//     {
+//         return NotFound(new { message = "Debt not found" });
+//     }
+
+    
+
+//     // Update the status of the debt to settled
+//     debt.Status = true;
+//     _context.Entry(debt).State = EntityState.Modified;
+
+//     // Fetch the debtor and creditor
+//     var debtor = await _context.Users.FindAsync(debt.DebtorId);
+//     var creditor = await _context.Users.FindAsync(debt.CreditorId);
+
+//     if (debtor == null || creditor == null)
+//     {
+//         return NotFound(new { message = "Debtor or Creditor not found" });
+//     }
+
+//     // Create a new expense for the debtor with the settled amount
+//     var debtorExpense = new Expense
+//     {
+//         PaidUser = debt.DebtorId,
+//         TripId = debt.TripId,
+//         Amount = debt.Amount,
+//         Comment = $"Settled debt with {debtor.Username}",
+//         Category = "Settlement",
+//     };
+
+//     // Subtract the settled amount from the creditor's existing expense
+//     var creditorExpense = await _context.Expenses
+//                                         .Where(e => e.PaidUser== debt.CreditorId && e.TripId == debt.TripId)
+//                                         .FirstOrDefaultAsync();
+
+//     if (creditorExpense != null)
+//     {
+//         creditorExpense.Amount -= debt.Amount;
+//         _context.Entry(creditorExpense).State = EntityState.Modified;
+//     }
+//     else
+//     {
+//         return NotFound(new { message = "Creditor's expense not found" });
+//     }
+
+//     // Add the new debtor expense to the database
+//     _context.Expenses.Add(debtorExpense);
+
+//     try
+//     {
+//         // Save changes for both the debt status update and new/updated expenses
+//         await _context.SaveChangesAsync();
+//     }
+//     catch (Exception ex)
+//     {
+//         return StatusCode(500, new { message = "An error occurred while updating the debt", details = ex.Message });
+//     }
+
+//     return Ok(new { message = "Debt settled successfully, new expenses recorded." });
+// }
+
+[HttpPost("settle-debt")]
+public async Task<IActionResult> SettleDebt(SettleDebtRequest debt)
 {
 
-    
-    var debt = await _context.Debts.FindAsync(DebtId);
-
-    if (debt == null)
+    using (var transaction = await _context.Database.BeginTransactionAsync())
     {
-        return NotFound(new { message = "Debt not found" });
+        try
+        {
+            // Find the debt record
+            var debtDetails = await _context.Debts
+                .Where(d => d.TripId == debt.TripId && d.DebtorId == debt.DebtorId && d.CreditorId == debt.CreditorId)
+                .FirstOrDefaultAsync();
+                
+
+            Console.WriteLine("Debt Details",debtDetails.TripId);
+            Console.WriteLine("       -----------------------------------");
+
+            if (debtDetails == null)
+            {
+                return NotFound(new { message = "Debt not found" });
+            }
+
+            // Update debt status to true (settled)
+            debtDetails.Status = true;
+            _context.Entry(debtDetails).State = EntityState.Modified;
+
+            // Create a new expense for the debtor
+            var debtorExpense = new Expense
+            {
+                ExpenseId = Guid.NewGuid(),
+                TripId = debtDetails.TripId,
+                PaidUser = debtDetails.DebtorId,
+                Amount = debtDetails.Amount,
+                Comment = "Settled payment",
+                Category = "Expense Settlement"
+            };
+
+            await _context.Expenses.AddAsync(debtorExpense);
+
+            // Subtract the settled amount from one of the creditor's expenses for the same trip
+            var creditorExpense = await _context.Expenses
+                .Where(e => e.PaidUser == debtDetails.CreditorId && e.TripId == debtDetails.TripId && e.Amount > 0)
+                .OrderByDescending(e => e.Amount) // Choose the largest expense
+                .FirstOrDefaultAsync();
+
+            if (creditorExpense != null)
+            {
+                creditorExpense.Amount -= debtDetails.Amount;
+                _context.Entry(creditorExpense).State = EntityState.Modified;
+            }
+
+            // Save changes for both the debt status update and new/updated expenses
+            await _context.SaveChangesAsync();
+
+            // Commit the transaction
+            await transaction.CommitAsync();
+
+            return Ok(new { message = "Debt settled successfully" });
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if an error occurs
+            await transaction.RollbackAsync();
+            return StatusCode(500, new { message = "An error occurred while settling the debt", error = ex.Message });
+        }
     }
-
-    
-
-    // Update the status of the debt to settled
-    debt.Status = true;
-    _context.Entry(debt).State = EntityState.Modified;
-
-    // Fetch the debtor and creditor
-    var debtor = await _context.Users.FindAsync(debt.DebtorId);
-    var creditor = await _context.Users.FindAsync(debt.CreditorId);
-
-    if (debtor == null || creditor == null)
-    {
-        return NotFound(new { message = "Debtor or Creditor not found" });
-    }
-
-    // Create a new expense for the debtor with the settled amount
-    var debtorExpense = new Expense
-    {
-        PaidUser = debt.DebtorId,
-        TripId = debt.TripId,
-        Amount = debt.Amount,
-        Comment = $"Settled debt with {debtor.Username}",
-        Category = "Settlement",
-    };
-
-    // Subtract the settled amount from the creditor's existing expense
-    var creditorExpense = await _context.Expenses
-                                        .Where(e => e.PaidUser== debt.CreditorId && e.TripId == debt.TripId)
-                                        .FirstOrDefaultAsync();
-
-    if (creditorExpense != null)
-    {
-        creditorExpense.Amount -= debt.Amount;
-        _context.Entry(creditorExpense).State = EntityState.Modified;
-    }
-    else
-    {
-        return NotFound(new { message = "Creditor's expense not found" });
-    }
-
-    // Add the new debtor expense to the database
-    _context.Expenses.Add(debtorExpense);
-
-    try
-    {
-        // Save changes for both the debt status update and new/updated expenses
-        await _context.SaveChangesAsync();
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, new { message = "An error occurred while updating the debt", details = ex.Message });
-    }
-
-    return Ok(new { message = "Debt settled successfully, new expenses recorded." });
 }
+
+
 
         
         

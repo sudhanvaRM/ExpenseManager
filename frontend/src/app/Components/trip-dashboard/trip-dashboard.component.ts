@@ -46,7 +46,6 @@ export class TripDashboardComponent implements OnInit {
       TripId: tripId
     };
 
-    console.log('Fetching trip debts for:', payload);
 
     this.http.post('http://localhost:5134/api/trip/fetch-trip-debts', payload).subscribe(
       (data: any) => {
@@ -67,8 +66,37 @@ export class TripDashboardComponent implements OnInit {
   }
 
   // Handle settling expense
-  settleExpense(creditorId: string): void {
-    alert(`Settle expense with Creditor ID: ${creditorId}`);
-    // Implement settle logic here
+  settleExpense(creditorId: string, tripId: string): void {
+  // Confirm action
+  if (!confirm('Are you sure you want to settle this expense?')) {
+    return;
   }
+
+
+  const requestPayload = {
+    TripId: tripId,
+    DebtorId: this.userId, // Assuming `currentUser` holds the logged-in user details
+    CreditorId: creditorId,
+  };
+
+  console.log('Settling expense:', requestPayload);
+
+  // Call the API to settle the debt
+  this.isLoading = true;
+  this.http.post('http://localhost:5134/api/trip/settle-debt', requestPayload).subscribe(
+    (response: any) => {
+      alert('Expense settled successfully!');
+      // Reload the trip details to reflect changes
+
+      this.viewTripDetails(this.selectedTripDebts.TripId);
+      this.isLoading = false;
+    },
+    (error) => {
+      console.error('Error settling expense', error);
+      alert('Failed to settle expense. Please try again later.');
+      this.isLoading = false;
+    }
+  );
+}
+  
 }
