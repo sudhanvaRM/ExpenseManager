@@ -82,6 +82,129 @@ namespace Server.Controllers
             return Ok(tripDetails);
         }
 
+        [HttpPost("fetch-trip-debts")]
+        public async Task<IActionResult> GetDebtsForTrip(AddTrip trip)
+        {
+            // Validate the user exists
+            var userExists = await _context.Set<Users>().AnyAsync(u => u.UserId == trip.UserId);
+            if (!userExists)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            // Validate the trip exists
+            var tripExists = await _context.Set<Trip>().AnyAsync(t => t.TripId == trip.TripId);
+            if (!tripExists)
+            {
+                return NotFound(new { Message = "Trip not found." });
+            }
+
+            // Debts where the user is the debtor (owes money) for the specified trip
+            var owesToOthers = await _context.Set<Debt>()
+                .Where(d => d.DebtorId == trip.UserId && d.TripId == trip.TripId)
+                .Select(d => new
+                {
+                    CreditorId = d.CreditorId,
+                    CreditorUsername = d.Creditor.Username,
+                    Amount = d.Amount
+                })
+                .ToListAsync();
+
+            // Debts where the user is the creditor (money owed to the user) for the specified trip
+            var owedByOthers = await _context.Set<Debt>()
+                .Where(d => d.CreditorId == trip.UserId && d.TripId == trip.TripId && d.Status == false)
+                .Select(d => new
+                {
+                    DebtorId = d.DebtorId,
+                    DebtorUsername = d.Debtor.Username,
+                    Amount = d.Amount
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                OwesToOthers = owesToOthers,
+                OwedByOthers = owedByOthers
+            });
+        }
+
+        [HttpPost("SettleDebt")]
+public async Task<IActionResult> SettleTripDebt(Guid DebtId)
+{
+
+    
+    var debt = await _context.Debts.FindAsync(DebtId);
+
+    if (debt == null)
+    {
+        return NotFound(new { message = "Debt not found" });
+    }
+
+    
+
+    // Update the status of the debt to settled
+    debt.Status = true;
+    _context.Entry(debt).State = EntityState.Modified;
+
+    // Fetch the debtor and creditor
+    var debtor = await _context.Users.FindAsync(debt.DebtorId);
+    var creditor = await _context.Users.FindAsync(debt.CreditorId);
+
+    if (debtor == null || creditor == null)
+    {
+        return NotFound(new { message = "Debtor or Creditor not found" });
+    }
+
+    // Create a new expense for the debtor with the settled amount
+    var debtorExpense = new Expense
+    {
+        PaidUser = debt.DebtorId,
+        TripId = debt.TripId,
+        Amount = debt.Amount,
+        Comment = $"Settled debt with {debtor.Username}",
+        Category = "Settlement",
+    };
+
+    // Subtract the settled amount from the creditor's existing expense
+    var creditorExpense = await _context.Expenses
+                                        .Where(e => e.PaidUser== debt.CreditorId && e.TripId == debt.TripId)
+                                        .FirstOrDefaultAsync();
+
+    if (creditorExpense != null)
+    {
+        creditorExpense.Amount -= debt.Amount;
+        _context.Entry(creditorExpense).State = EntityState.Modified;
+    }
+    else
+    {
+        return NotFound(new { message = "Creditor's expense not found" });
+    }
+
+    // Add the new debtor expense to the database
+    _context.Expenses.Add(debtorExpense);
+
+    try
+    {
+        // Save changes for both the debt status update and new/updated expenses
+        await _context.SaveChangesAsync();
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "An error occurred while updating the debt", details = ex.Message });
+    }
+
+    return Ok(new { message = "Debt settled successfully, new expenses recorded." });
+}
+
+        
+        
+        
+
+        
+        
+        
+        
+
             // [HttpGet("user-expenses/{userId}")]
             // public async Task<IActionResult> GetUserExpenses(Guid userId)
             // {

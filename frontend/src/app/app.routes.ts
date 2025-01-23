@@ -5,6 +5,8 @@ import { SignupComponent } from './Components/signup/signup.component';
 import { AddTripComponent } from './Components/add-trip/add-trip.component';
 import { AddExpenseComponent } from './Components/add-expense/add-expense.component';
 import { ViewExpensesComponent } from './Components/view-expenses/view-expenses.component';
+import { TripDashboardComponent } from './Components/trip-dashboard/trip-dashboard.component';
+
 
 export const routes: Routes = [
   {
@@ -15,7 +17,8 @@ export const routes: Routes = [
       { path: 'signup', component: SignupComponent },
       { path: 'add-expense', component: AddExpenseComponent},
       { path: 'add-trip', component: AddTripComponent },
-      { path: 'view-expenses', component: ViewExpensesComponent}
+      { path: 'view-expenses', component: ViewExpensesComponent},
+      { path: 'view-trips',component: TripDashboardComponent }
     ]
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' }

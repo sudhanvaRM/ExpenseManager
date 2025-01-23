@@ -1,10 +1,59 @@
-<div class="dashboard-container">
-    <h2>My Trips</h2>
-    <div *ngIf="message" class="message">{{ message }}</div>
-    <div *ngIf="trips.length === 0 && !message">No trips found.</div>
-    <div *ngFor="let trip of trips" class="trip-card">
-      <h3>{{ trip.tripName }}</h3>
-      <button (click)="addExpense(trip.tripId)">Add Expense</button>
-      <button (click)="addParticipant(trip.tripId)">Add Participant</button>
+<div class="trip-details-container">
+  <h2>Your Trips</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading trips...</p>
+  </div>
+
+  <!-- List of Trips -->
+  <div *ngFor="let trip of trips" class="trip-card">
+    <h3>{{ trip.tripName }}</h3>
+    <button (click)="viewTripDetails(trip.tripId)">View Details</button>
+  </div>
+
+  <!-- Debts Section -->
+  <div *ngIf="selectedTripDebts">
+    <h2>Debts for Trip: {{ selectedTripName }}</h2>
+
+    <!-- Owes To Others -->
+<div *ngIf="selectedTripDebts.OwesToOthers.length > 0">
+  <h3>Owes To Others</h3>
+  <div *ngFor="let debt of selectedTripDebts.OwesToOthers" class="debt-card">
+    <!-- Updated to highlight amount and creditor's name -->
+    <p>
+      You Owe <span class="highlight">{{ debt.amount | currency }}</span> to 
+      <span class="highlight">{{ debt.creditorUsername }}</span>
+    </p>
+    <button *ngIf="debt.amount > 0" (click)="settleExpense(debt.CreditorId)">
+      Settle Expense
+    </button>
+  </div>
+</div>
+
+ <!-- Owed By Others -->
+<div *ngIf="selectedTripDebts.OwedByOthers.length > 0">
+  <h3>Owed By Others</h3>
+  <div *ngFor="let debt of selectedTripDebts.OwedByOthers" class="debt-card">
+    <!-- Updated to highlight amount and creditor's name -->
+    <p>
+      <span class="highlight">{{ debt.debtorUsername }}</span> Owes You
+       <span class="highlight">{{ debt.amount | currency }}</span> 
+      
+    </p>
+
+  </div>
+</div>
+    
+   
+
+    <!-- Owed By Others -->
+    <!-- <div *ngIf="selectedTripDebts.OwedByOthers.length > 0">
+      <h3>Owed By Others</h3>
+      <div *ngFor="let debt of selectedTripDebts.OwedByOthers" class="debt-card">
+        <p><strong>Debtor:</strong> {{ debt.debtorUsername }}</p>
+        <p><strong>Amount:</strong> {{ debt.amount | currency }}</p>
+      </div>
     </div>
   </div>
+</div> -->

@@ -1,48 +1,74 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-trip-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
   templateUrl: './trip-dashboard.component.html',
+  imports: [CommonModule], 
   styleUrls: ['./trip-dashboard.component.css']
 })
-export class TripDashboard implements OnInit {
+export class TripDashboardComponent implements OnInit {
+  userId: string = ''; // Replace with dynamic user ID as needed
   trips: any[] = [];
-  message: string = '';
+  selectedTripDebts: any = null;
+  selectedTripName: string = '';
+  isLoading: boolean = false;
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
-    this.loadTrips();
+  ngOnInit(): void {
+    this.userId = localStorage.getItem('user_id') || '';
+    this.getTrips();
   }
 
-  loadTrips() {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) {
-      this.message = 'User ID not found in local storage';
-      return;
-    }
-
-    this.http.get<any[]>(`http://localhost:5134/api/trip/user-trips/${userId}`)
-      .subscribe(response => {
-        this.trips = response;
-      }, error => {
-        this.message = error.error.message;
-        console.error('Failed to load trips', error);
-      });
+  // Fetch trips for the user
+  getTrips(): void {
+    this.isLoading = true;
+    this.http.get(`http://localhost:5134/api/trip/trip-details/${this.userId}`).subscribe(
+      (data: any) => {
+        // console.log('Fetched trips:', data);
+        this.trips = data;
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching trips', error);
+        this.isLoading = false;
+      }
+    );
   }
 
-  addExpense(tripId: string) {
-    // Navigate to add expense page or open a modal
-    console.log('Add expense for trip', tripId);
+  // Fetch debts for a selected trip
+  viewTripDetails(tripId: string): void {
+    this.isLoading = true;
+    const payload = {
+      UserId: this.userId,
+      TripId: tripId
+    };
+
+    console.log('Fetching trip debts for:', payload);
+
+    this.http.post('http://localhost:5134/api/trip/fetch-trip-debts', payload).subscribe(
+      (data: any) => {
+        console.log('Fetched trip debts:', data);
+        // Mock response syncing
+        this.selectedTripDebts = {
+          OwesToOthers: data.owesToOthers, // Correct the response structure
+          OwedByOthers: data.owedByOthers  // Correct the response structure
+        };
+        this.selectedTripName = this.trips.find((trip) => trip.TripId === tripId)?.TripName || '';
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching trip debts', error);
+        this.isLoading = false;
+      }
+    );
   }
 
-  addParticipant(tripId: string) {
-    // Navigate to add participant page or open a modal
-    console.log('Add participant for trip', tripId);
+  // Handle settling expense
+  settleExpense(creditorId: string): void {
+    alert(`Settle expense with Creditor ID: ${creditorId}`);
+    // Implement settle logic here
   }
 }

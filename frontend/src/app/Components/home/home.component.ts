@@ -3,7 +3,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { LoginComponent } from '../login/login.component';
 import { SignupComponent } from '../signup/signup.component';
 import { AddTripComponent } from '../add-trip/add-trip.component';
-import { TripDashboard } from '../trip-dashboard/trip-dashboard.component';
+import { TripDashboardComponent } from '../trip-dashboard/trip-dashboard.component';
 import { AddExpenseComponent } from '../add-expense/add-expense.component';
 import { RouterOutlet } from '@angular/router';
 
@@ -15,7 +15,7 @@ import { RouterOutlet } from '@angular/router';
     LoginComponent,
     SignupComponent,
     AddTripComponent,
-    TripDashboard,
+    TripDashboardComponent,
     RouterOutlet,
     AddExpenseComponent
   ],

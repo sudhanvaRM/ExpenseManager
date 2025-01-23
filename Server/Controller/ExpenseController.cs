@@ -172,6 +172,23 @@ namespace Server.Controllers
             expense.TripId = request.TripId;
             await _context.SaveChangesAsync();
 
+            List<UserExpense> userExpenses = await _tripStatus.FetchUserExpenseAsync(expense.TripId.Value);
+
+            var debtExisting = await _context.Debts
+                              .Where(d => d.TripId == expense.TripId)
+                              .ToListAsync();
+
+             _context.Debts.RemoveRange(debtExisting);
+
+                       // Save changes to the database
+
+                     await _context.SaveChangesAsync();   
+                     
+             List<Debt> debts = await _tripStatus.SettleExpensesAsync(expense.TripId.Value, userExpenses);
+
+                    // If needed, save any changes resulting from debt settlement
+                    await _context.SaveChangesAsync();
+
             return Ok(new { message = "Expense assigned to trip successfully." });
         }
 

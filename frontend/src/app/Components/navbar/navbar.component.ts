@@ -25,4 +25,8 @@ export class NavbarComponent {
     this.router.navigate(['/home/view-expenses']);
   }
 
+  handleViewTrips(){
+    this.router.navigate(['/home/view-trips']);
+  }
+
 }
