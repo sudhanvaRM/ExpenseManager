@@ -1,0 +1,23 @@
+<div class="add-participant-container">
+    <h2>Add Participant to Trip</h2>
+  
+    <div *ngIf="isLoading" class="loading">
+      <p>Loading participants...</p>
+    </div>
+  
+    <!-- Select participant -->
+    <div>
+      <label for="participant">Select Participant:</label>
+      <select [(ngModel)]="selectedUserId" id="participant">
+        <option *ngFor="let participant of participantsNotInTrip" [value]="participant.userId">
+          {{ participant.username }}
+        </option>
+      </select>
+    </div>
+  
+    <button (click)="addParticipant()" [disabled]="!selectedUserId || isLoading">Add Participant</button>
+  
+    <!-- Close Button to go back to Dashboard -->
+    <button (click)="goBackToDashboard()">Close</button>
+  </div>
+  

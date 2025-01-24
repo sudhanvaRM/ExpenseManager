@@ -10,6 +10,9 @@
   <div *ngFor="let trip of trips" class="trip-card">
     <h3>{{ trip.tripName }}</h3>
     <button (click)="viewTripDetails(trip.tripId)">View Details</button>
+
+    <!-- Add Participant Button -->
+    <button (click)="navigateToAddParticipant(trip.tripId)">Add Participant</button>
   </div>
 
   <!-- Debts Section -->

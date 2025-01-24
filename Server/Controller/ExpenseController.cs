@@ -23,13 +23,35 @@ namespace Server.Controllers
 
         }
 
+       [HttpGet("NotInTrip/{tripId}")]
+        public ActionResult<IEnumerable<object>> GetUsersNotInTrip(Guid tripId)
+        {
+            try
+            {
+                var usersNotInTrip = _context.Users
+                    .Where(u => !_context.TripParticipants
+                        .Any(tp => tp.TripId == tripId && tp.UserId == u.UserId))
+                    .Select(u => new
+                    {
+                        u.UserId,
+                        u.Username
+                    })
+                    .ToList();
+
+                return Ok(usersNotInTrip);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching the data.", error = ex.Message });
+            }
+        }
+
         [HttpPost("add-person-to-trip")]
         public async Task<IActionResult> AddPersonToTrip(AddTrip addTrip)
         {
-            Console.WriteLine("Trip Id",addTrip.TripId);
             // Check if the trip exists
             var trip = await _context.Trips.FindAsync(addTrip.TripId);
-            Console.WriteLine("Trip Details",trip);
+
             if (trip == null)
             {
                 return NotFound(new { message = "Trip not found." });

@@ -212,8 +212,6 @@ public async Task<IActionResult> SettleDebt(SettleDebtRequest debt)
                 .FirstOrDefaultAsync();
                 
 
-            Console.WriteLine("Debt Details",debtDetails.TripId);
-            Console.WriteLine("       -----------------------------------");
 
             if (debtDetails == null)
             {

@@ -44,6 +44,7 @@ export class AddExpenseComponent implements OnInit {
   loadTrips(userId: string): void {
     this.http.get(`${this.tripsApiUrl}/${userId}`).subscribe(
       (response: any) => {
+        console.log('Fetched Trips:', response);
         this.tripList = [{ tripId: null, tripName: 'Unassigned' }, ...response]; // Add "Unassigned" option
         console.log('Fetched Trips:', this.tripList);
       },

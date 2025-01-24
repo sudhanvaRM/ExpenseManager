@@ -30,12 +30,13 @@ export class ViewExpensesComponent implements OnInit {
     }
   }
 
-  // Fetch user expenses based on the userId
+  //Fetch user expenses based on the userId
   loadExpenses(userId: string): void {
     this.http.get(`${this.apiUrl}/${userId}`).subscribe(
       (response: any) => {
+        // console.log("My Expenses:", response);
         this.expenses = response;
-        console.log('Fetched expenses:', this.expenses);
+
       },
       (error) => {
         console.error('Error fetching expenses:', error);
@@ -48,8 +49,8 @@ export class ViewExpensesComponent implements OnInit {
   loadTrips(userId: string): void {
     this.http.get(`${this.tripsApiUrl}/${userId}`).subscribe(
       (response: any) => {
+        console.log('Trips:', response);
         this.tripList = response;
-        console.log('Fetched Trips:', this.tripList);
       },
       (error) => {
         console.error('Error fetching trips:', error);
