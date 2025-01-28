@@ -15,6 +15,7 @@ export class ViewExpensesComponent implements OnInit {
   expenses: any[] = []; // To hold expenses fetched from the API
   tripList: any[] = []; // To hold trips fetched for the dropdown
   selectedTripId: string | null = null; // To store the selected trip for unassigned expenses
+  message: string = '';
 
   private apiUrl = 'http://localhost:5134/api/expense/user-expenses'; // API to fetch user expenses
   private tripsApiUrl = 'http://localhost:5134/api/trip/trip-details'; // API to fetch trips
@@ -34,6 +35,7 @@ export class ViewExpensesComponent implements OnInit {
   loadExpenses(userId: string): void {
     this.http.get(`${this.apiUrl}/${userId}`).subscribe(
       (response: any) => {
+        this.message = response.message;
         // console.log("My Expenses:", response);
         this.expenses = response;
 
@@ -49,6 +51,7 @@ export class ViewExpensesComponent implements OnInit {
   loadTrips(userId: string): void {
     this.http.get(`${this.tripsApiUrl}/${userId}`).subscribe(
       (response: any) => {
+        
         console.log('Trips:', response);
         this.tripList = response;
       },

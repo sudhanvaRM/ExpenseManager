@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\server\\Server.csproj": {}
+    "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\Server\\Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\server\\Server.csproj": {
+    "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\Server\\Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\server\\Server.csproj",
+        "projectUniqueName": "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\Server\\Server.csproj",
         "projectName": "Server",
-        "projectPath": "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\server\\Server.csproj",
+        "projectPath": "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\Server\\Server.csproj",
         "packagesPath": "C:\\Users\\26301\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\server\\obj\\",
+        "outputPath": "C:\\Users\\26301\\Desktop\\ExpenseManager11\\ExpenseManager\\Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\26301\\AppData\\Roaming\\NuGet\\NuGet.Config"

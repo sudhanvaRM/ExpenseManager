@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -36,7 +37,7 @@ export class LoginComponent {
           localStorage.setItem('user_id', response.user_id);
           localStorage.setItem('username', this.username);
           localStorage.setItem('isLoggedIn', 'true');
-         this.router.navigate(['/home']);
+        //  this.router.navigate(['/home']);
         }, error => {
           this.message = error.error.message;
           console.error('Login failed', error);

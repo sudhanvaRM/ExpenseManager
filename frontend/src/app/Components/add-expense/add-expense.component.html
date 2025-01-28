@@ -4,9 +4,9 @@
     <!-- Trip Selection Dropdown -->
     <label for="trip">Select Trip (Optional):</label>
     <select
-      tripId="trip"
+      id="trip"
       [(ngModel)]="expense.TripId"
-      tripName="TripId"
+      name="TripId"
       class="form-control"
     >
       <option *ngFor="let trip of tripList" [value]="trip.tripId">

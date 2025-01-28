@@ -7,6 +7,10 @@
   </div>
 
   <!-- List of Trips -->
+  <div *ngIf="trips.length === 0 && !isLoading">
+    <p>No trips found. Create a new trip to get started!</p>
+  </div>
+  
   <div *ngFor="let trip of trips" class="trip-card">
     <h3>{{ trip.tripName }}</h3>
     <button (click)="viewTripDetails(trip.tripId)">View Details</button>

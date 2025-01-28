@@ -1,6 +1,9 @@
 <div class="container">
     <h2>View Expenses</h2>
-    <table class="table table-bordered">
+    <div *ngIf = message class="message">
+      {{ message }}
+    </div>
+    <table  * ngIf = !message class="table table-bordered">
       <thead>
         <tr>
           <!-- <th>Expense ID</th> -->

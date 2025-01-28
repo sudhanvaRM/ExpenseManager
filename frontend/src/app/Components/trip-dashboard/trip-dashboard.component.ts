@@ -16,6 +16,7 @@ export class TripDashboardComponent implements OnInit {
   selectedTripDebts: any = null;
   selectedTripName: string = '';
   isLoading: boolean = false;
+  message: string = '';
 
   // Add Participants Logic
   participantsNotInTrip: any[] = [];
@@ -34,6 +35,7 @@ export class TripDashboardComponent implements OnInit {
     this.isLoading = true;
     this.http.get(`http://localhost:5134/api/trip/trip-details/${this.userId}`).subscribe(
       (data: any) => {
+        this.message = data.message;
         this.trips = data;
         this.isLoading = false;
       },

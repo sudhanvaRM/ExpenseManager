@@ -175,7 +175,7 @@ namespace Server.Controllers
 
             if (expenses == null || expenses.Count == 0)
             {
-                return NotFound(new { message = "No expenses found for the user." });
+                return Ok(new { message = "No expenses found for the user." });
             }
 
             return Ok(expenses);
