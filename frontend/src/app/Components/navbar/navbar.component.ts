@@ -28,5 +28,12 @@ export class NavbarComponent {
   handleViewTrips(){
     this.router.navigate(['/home/view-trips']);
   }
+   
+  
+  logoutHandler(){
+    localStorage.clear();
+    console.log('Logged out successfully');
+    this.router.navigate(['/home/login']);
+  }
 
 }
